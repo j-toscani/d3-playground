@@ -6,24 +6,13 @@ const createDataSet = () =>
         return {
             cy: Math.floor(Math.random() * 300),
             cx: Math.floor(Math.random() * 300),
-            r: Math.floor(Math.random() * 50),
+            r: Math.floor(Math.random() * 40),
         };
     });
 
-const dataSets = [
-    createDataSet(),
-    createDataSet(),
-    createDataSet(),
-    createDataSet(),
-];
+const button = document.querySelector('button');
 
-const buttons = document.querySelectorAll('button');
-
-console.log(dataSets);
-
-buttons.forEach((button, i) => {
-    button.addEventListener('click', () => {
-        setData(dataSets[i])
-    })
+button?.addEventListener('click', () => {
+    setData(createDataSet());
 })
 
