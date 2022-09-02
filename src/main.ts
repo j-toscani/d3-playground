@@ -1,23 +1,29 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import { setupCounter } from './counter'
+import setData from "./setData";
+import "./style.css";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+const createDataSet = () =>
+    Array.from(new Array(4), () => {
+        return {
+            cy: Math.floor(Math.random() * 300),
+            cx: Math.floor(Math.random() * 300),
+            r: Math.floor(Math.random() * 50),
+        };
+    });
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+const dataSets = [
+    createDataSet(),
+    createDataSet(),
+    createDataSet(),
+    createDataSet(),
+];
+
+const buttons = document.querySelectorAll('button');
+
+console.log(dataSets);
+
+buttons.forEach((button, i) => {
+    button.addEventListener('click', () => {
+        setData(dataSets[i])
+    })
+})
+
