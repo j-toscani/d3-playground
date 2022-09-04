@@ -30,6 +30,8 @@ function createPlotData(dots: number) {
 function setPlotData(data: number[]) {
     selectAll("circle")
         .data(data.sort((a, b) => b - a))
+        .transition()
+        .duration(750)
         .attr("cy", (d) => d)
         .attr("cx", (_d, i) => 4 + i * 15)
         .attr("r", 5);
