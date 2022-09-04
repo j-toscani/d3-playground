@@ -23,10 +23,9 @@ function setChart(event: HashChangeEvent) {
 
     if (charts[hash]) {
         charts[hash]();
+    } else {
+       charts['default']();
     }
-    // else {
-    //    charts['default']();
-    //}
 }
 
 export default function initRouter() {

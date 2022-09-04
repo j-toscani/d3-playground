@@ -26,10 +26,10 @@ function createLineData(points: number) {
 }
 
 function setLineData(points: { x: number; y: number }[]) {
-    const path = `M 0 ${points[0].y}, ${points
+    const path = `M 0 ${400 - points[0].y}, ${points
         .slice(1)
         .map(({ x, y }) => 
-            `L ${x} ${y}`
+            `L ${x} ${400 - y}`
         )
         .join(", ")}`;
 
