@@ -12,6 +12,19 @@ body {
     width: 100%;
 }
 
+svg {
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+nav {
+    display: flex;
+    padding: 2rem 0;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;;
+}
+
 main {
     height: 100%;
     display: flex;
