@@ -1,9 +1,11 @@
 import barChart from "../charts/barChart";
+import createDotPlot from "../charts/dotPlot";
 import randomDots from "../charts/randomDots";
 
 export const charts: Record<string, () => void> = {
     default: randomDots,
-    bar: barChart
+    bar: barChart,
+    dots: createDotPlot,
 };
 
 function setChart(event: HashChangeEvent) {
