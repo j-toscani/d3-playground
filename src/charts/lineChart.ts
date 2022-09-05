@@ -1,19 +1,21 @@
 import { select } from "d3";
+import createButtonContainer from "../utils/createButtonContainer";
 
 export default function createLineChart() {
     select("main").append("svg").append('path');
-    select("main").append("button");
 
     select("svg").attr("width", 600).attr('height', 400);
-
-    const button = document.querySelector("button");
+    
+    const container = createButtonContainer();
+    const button = document.createElement("button");
     const points = 12;
 
     if (button) {
-        button.textContent = "randomise";
+        button.textContent = "Randomise";
         button.addEventListener("click", () =>
             setLineData(createLineData(points))
         );
+        container?.append(button);
     }
 
     setLineData(createLineData(points));
