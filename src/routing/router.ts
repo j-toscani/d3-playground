@@ -1,3 +1,4 @@
+import createArtChart from "../charts/artChart";
 import barChart from "../charts/barChart";
 import createDotPlot from "../charts/dotPlot";
 import createLineChart from "../charts/lineChart";
@@ -8,6 +9,7 @@ export const charts: Record<string, () => void> = {
     bar: barChart,
     dots: createDotPlot,
     line: createLineChart,
+    art: createArtChart
 };
 
 function setChart(event: HashChangeEvent) {
