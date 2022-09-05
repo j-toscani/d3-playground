@@ -1,4 +1,13 @@
-import { range, select, selectAll } from "d3";
+import {
+    range,
+    select,
+    selectAll,
+    symbol,
+    symbolCircle,
+    symbolCross,
+    symbolDiamond,
+    symbols,
+} from "d3";
 
 const width = 610;
 const height = 410;
@@ -13,13 +22,17 @@ export default function createArtChart() {
     select("svg").append("mask").attr("id", outerId);
     select("svg").append("mask").attr("id", innerId);
 
-    createLines([...createHorizontalLines(outerId), ...createVerticalLines(innerId)]);
+    createLines([
+        ...createHorizontalData(innerId),
+        ...createVerticalData(outerId),
+    ]);
 
     createCircleMask(innerId, "white");
     createOuterMask(outerId, createCircleMask);
 
     [
         { name: "Rect", maskCreator: createRectMask },
+        { name: "Symbol", maskCreator: createSymbolMasks },
         { name: "Circle", maskCreator: createCircleMask },
     ].forEach(({ name, maskCreator }) => {
         const button = document.createElement("button");
@@ -32,6 +45,14 @@ export default function createArtChart() {
             createOuterMask(outerId, maskCreator);
         });
     });
+
+    const button = document.createElement("button");
+
+    if (button) {
+        button.textContent = "Switch Lines";
+        button.addEventListener("click", () => swithLines([innerId, outerId]));
+        document.querySelector('main')?.append(button);
+    }
 }
 
 type ArtLine = {
@@ -42,9 +63,16 @@ type ArtLine = {
     mask: string;
 };
 
+function swithLines(ids: string[]) {
+    const first = selectAll(`rect[mask="url(#${ids[0]})"]`)
+    const second = selectAll(`rect[mask="url(#${ids[1]})"]`)
+    first.attr("mask", `url(#${ids[1]})`);
+    second.attr("mask", `url(#${ids[0]})`);
+}
+
 function createLines(data: ArtLine[]) {
-    select("svg").
-    selectAll("rect")
+    select("svg")
+        .selectAll("rect")
         .data(data)
         .join("rect")
         .attr("mask", ({ mask }) => `url(#${mask})`)
@@ -54,9 +82,10 @@ function createLines(data: ArtLine[]) {
         .attr("x", ({ x }) => x);
 }
 
-function createHorizontalLines(maskId: string) {
-    const horizontalCount =
-        Math.ceil(Math.floor(height / lineWidth - (height % lineWidth)) / 2);
+function createHorizontalData(maskId: string) {
+    const horizontalCount = Math.ceil(
+        Math.floor(height / lineWidth - (height % lineWidth)) / 2
+    );
 
     return range(horizontalCount).map((_e, i) => ({
         mask: maskId,
@@ -67,9 +96,10 @@ function createHorizontalLines(maskId: string) {
     }));
 }
 
-function createVerticalLines(maskId: string) {
-    const verticalCount =
-       Math.ceil(Math.floor(width / lineWidth - (width % lineWidth)) / 2);
+function createVerticalData(maskId: string) {
+    const verticalCount = Math.ceil(
+        Math.floor(width / lineWidth - (width % lineWidth)) / 2
+    );
 
     return range(verticalCount).map((_e, i) => ({
         mask: maskId,
@@ -99,11 +129,30 @@ function clearMasks() {
 
 function createCircleMask(id: string, color: "black" | "white") {
     select(`#${id}`)
-        .append("circle")
-        .attr("cx", width / 2)
-        .attr("cy", height / 2)
-        .attr("r", 170)
+        .append("path")
+        .attr("d", symbol(symbolCircle, 320 * 320)())
+        .attr("transform", `translate(${width / 2}, ${height / 2})`)
         .attr("fill", color);
+}
+
+function createSymbolMasks(id: string, color: "white" | "black") {
+    const size = 120 * 120;
+    const g = select(`#${id}`);
+    const diamond = g.append("path").attr("d", symbol(symbolDiamond, size)());
+    const circle = g.append("path").attr("d", symbol(symbolCircle, size)());
+    const cross = g.append("path").attr("d", symbol(symbolCross, size)());
+
+    [diamond, cross, circle].forEach((element) => element.attr("fill", color));
+
+    diamond.attr("transform", `translate(${(width - 20) / 6}, ${height / 2})`);
+    circle.attr(
+        "transform",
+        `translate(${((width - 20) / 6) * 3}, ${height / 2})`
+    );
+    cross.attr(
+        "transform",
+        `translate(${((width - 20) / 6) * 5}, ${height / 2})`
+    );
 }
 
 function createRectMask(maskId: string, color: "black" | "white") {
