@@ -5,7 +5,7 @@ import {
     symbol,
     symbolCircle,
     symbolCross,
-    symbolDiamond,
+    symbolStar,
 } from "d3";
 import createButtonContainer from "../utils/createButtonContainer";
 
@@ -65,8 +65,8 @@ type ArtLine = {
 };
 
 function swithLines(ids: string[]) {
-    const first = selectAll(`rect[mask="url(#${ids[0]})"]`)
-    const second = selectAll(`rect[mask="url(#${ids[1]})"]`)
+    const first = selectAll(`rect[mask="url(#${ids[0]})"]`);
+    const second = selectAll(`rect[mask="url(#${ids[1]})"]`);
     first.attr("mask", `url(#${ids[1]})`);
     second.attr("mask", `url(#${ids[0]})`);
 }
@@ -138,22 +138,16 @@ function createCircleMask(id: string, color: "black" | "white") {
 
 function createSymbolMasks(id: string, color: "white" | "black") {
     const size = 120 * 120;
-    const g = select(`#${id}`);
-    const diamond = g.append("path").attr("d", symbol(symbolDiamond, size)());
+    const g = select(`#${id}`).append("g");
+    const star = g.append("path").attr("d", symbol(symbolStar, size)());
     const circle = g.append("path").attr("d", symbol(symbolCircle, size)());
     const cross = g.append("path").attr("d", symbol(symbolCross, size)());
 
-    [diamond, cross, circle].forEach((element) => element.attr("fill", color));
-
-    diamond.attr("transform", `translate(${(width - 20) / 6}, ${height / 2})`);
-    circle.attr(
-        "transform",
-        `translate(${((width - 20) / 6) * 3}, ${height / 2})`
-    );
-    cross.attr(
-        "transform",
-        `translate(${((width - 20) / 6) * 5}, ${height / 2})`
-    );
+    [star, cross, circle].forEach((element) => element.attr("fill", color));
+    g.attr("transform", `translate(${width / 2 + 10}, ${height / 2})`);
+    
+    star.attr('transform', `translate(-${width / 3})`);
+    cross.attr('transform', `translate(${width / 3})`) 
 }
 
 function createRectMask(maskId: string, color: "black" | "white") {
