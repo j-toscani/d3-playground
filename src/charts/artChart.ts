@@ -9,8 +9,8 @@ import {
 } from "d3";
 import createButtonContainer from "../utils/createButtonContainer";
 
-const width = 610;
-const height = 410;
+const width = 1200;
+const height = 400;
 const lineWidth = 10;
 
 export default function createArtChart() {
