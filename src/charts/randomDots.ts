@@ -1,23 +1,26 @@
 import { selectAll } from "d3";
 import { select } from "d3";
+import createButtonContainer from "../utils/createButtonContainer";
 
 const createDataSet = () => Array.from(new Array(4), createRandomDotFactory());
 
 export default function randomDots() {
     select("main").append("svg");
-    select("main").append("button");
+    const button = document.createElement("button");
+    const container = createButtonContainer();
 
-    const button = document.querySelector("button");
-    button!.textContent = "Randomise";
+    if (button) {
+        button.textContent = "Randomise";
+        button?.addEventListener("click", () => {
+            setData(createDataSet());
+        });
+        container?.append(button);
+    }
 
     select("svg").attr("width", 600).attr("height", 400);
 
     [1, 2, 3, 4].forEach(() => {
         select("svg").append("circle");
-    });
-
-    button?.addEventListener("click", () => {
-        setData(createDataSet());
     });
 
     setData(createDataSet());

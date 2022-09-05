@@ -1,8 +1,10 @@
 import { select, selectAll } from "d3";
+import createButtonContainer from "../utils/createButtonContainer";
 
 export default function createDotPlot() {
     select("main").append("svg").attr("height", 400).attr("width", 600);
-    select("main").append("button");
+    const button = document.createElement('button');
+    const container = createButtonContainer();
 
     const dots = 40;
 
@@ -10,13 +12,12 @@ export default function createDotPlot() {
         select("svg").append("circle");
     }
 
-    const button = document.querySelector("button");
-
     if (button) {
-        button.textContent = "randomise";
+        button.textContent = "Randomise";
         button.addEventListener("click", () =>
             setPlotData(createPlotData(dots))
         );
+        container?.append(button)
     }
     setPlotData(createPlotData(dots));
 }

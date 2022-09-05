@@ -1,22 +1,22 @@
-import { axisBottom, axisLeft, scaleBand, scaleLinear, select, selectAll } from "d3";
+import { select, selectAll } from "d3";
+import createButtonContainer from "../utils/createButtonContainer";
 
 export default function barChart() {
     select("main")?.append("svg").attr("width", 600).attr("height", 400);
-    select("main")?.append("button");
 
-    Array.from(new Array(10), () => select('svg').append('rect'));
+    Array.from(new Array(10), () => select("svg").append("rect"));
 
     setData(createRandomData());
-    const button = document.querySelector("button");
+    
+    const button = document.createElement('button');
+    const container = createButtonContainer();
+
     button?.addEventListener("click", () => setData(createRandomData()));
 
     if (button) {
-        button.textContent = "randomise";
+        button.textContent = "Randomise";
+        container?.append(button)
     }
-    const scale = scaleBand().domain([0, 400]).range([20,400]).padding(20);
-    const y_axis = axisLeft(scale);
-    
-    select('svg').append("g").call(y_axis);
 }
 
 function setData(data: number[]) {

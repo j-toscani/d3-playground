@@ -6,8 +6,8 @@ import {
     symbolCircle,
     symbolCross,
     symbolDiamond,
-    symbols,
 } from "d3";
+import createButtonContainer from "../utils/createButtonContainer";
 
 const width = 610;
 const height = 410;
@@ -27,9 +27,10 @@ export default function createArtChart() {
         ...createVerticalData(outerId),
     ]);
 
+    const container = createButtonContainer();
+
     createCircleMask(innerId, "white");
     createOuterMask(outerId, createCircleMask);
-
     [
         { name: "Rect", maskCreator: createRectMask },
         { name: "Symbol", maskCreator: createSymbolMasks },
@@ -37,7 +38,7 @@ export default function createArtChart() {
     ].forEach(({ name, maskCreator }) => {
         const button = document.createElement("button");
         button.textContent = `Use ${name} mask`;
-        document.querySelector("main")?.append(button);
+        container?.append(button);
 
         button.addEventListener("click", () => {
             clearMasks();
@@ -51,7 +52,7 @@ export default function createArtChart() {
     if (button) {
         button.textContent = "Switch Lines";
         button.addEventListener("click", () => swithLines([innerId, outerId]));
-        document.querySelector('main')?.append(button);
+        container?.append(button);
     }
 }
 
