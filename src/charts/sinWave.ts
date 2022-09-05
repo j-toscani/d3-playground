@@ -13,32 +13,37 @@ export default function createSinWave() {
     const r = 15;
     const dotCount = width / (r * 2);
     let tick = 0;
-    
+
     requestAnimationFrame(renderSinPlot);
 
     function renderSinPlot() {
         tick += 0.005;
-        svg.selectAll("circle")
-        .data(createDotData(dotCount, r, tick))
-        .join(
-       'circle' )
-                    .attr("r", ({ r }) => r)
-                    .attr("cx", ({ x }) => x)
-                    .attr("cy", ({ y }) => y),
- 
- 
-        svg.selectAll("circle").data(createDotData(dotCount, r, tick));
-
+        renderWave(createDotData(dotCount, r, tick));
         if (document.querySelector("#sin")) {
-           requestAnimationFrame(renderSinPlot);
+            requestAnimationFrame(renderSinPlot);
         }
     }
+}
+
+function renderWave( data: any []) {
+   select("svg")
+            .selectAll("circle")
+            .data(data)
+            .join("circle")
+            .attr("r", ({ r }) => r)
+            .attr("cx", ({ x }) => x)
+            .attr("cy", ({ y }) => y)
+         
+    
 }
 
 function createDotData(entries: number, radius: number, tick: number) {
     return range(entries).map((d) => ({
         x: d * (radius + radius) + radius,
-        y: radius + (height - radius * 2) / 2 + Math.sin(d * 0.2 + tick) * (height- radius * 2) / 2, 
+        y:
+            radius +
+            (height - radius * 2) / 2 +
+            (Math.sin(d * 0.2 + tick) * (height - radius * 2)) / 2,
         r: radius,
     }));
 }
