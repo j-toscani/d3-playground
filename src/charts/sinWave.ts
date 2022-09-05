@@ -4,7 +4,7 @@ const width = 1200;
 const height = 400;
 
 export default function createSinWave() {
-    const svg = select("main")
+    select("main")
         .append("svg")
         .attr("width", width)
         .attr("height", height)
@@ -25,16 +25,14 @@ export default function createSinWave() {
     }
 }
 
-function renderWave( data: any []) {
-   select("svg")
-            .selectAll("circle")
-            .data(data)
-            .join("circle")
-            .attr("r", ({ r }) => r)
-            .attr("cx", ({ x }) => x)
-            .attr("cy", ({ y }) => y)
-         
-    
+function renderWave(data: any[]) {
+    select("svg")
+        .selectAll("circle")
+        .data(data)
+        .join("circle")
+        .attr("r", ({ r }) => r)
+        .attr("cx", ({ x }) => x)
+        .attr("cy", ({ y }) => y);
 }
 
 function createDotData(entries: number, radius: number, tick: number) {
