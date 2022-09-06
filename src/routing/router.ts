@@ -3,6 +3,7 @@ import barChart from "../charts/barChart";
 import createDotPlot from "../charts/dotPlot";
 import createLineChart from "../charts/lineChart";
 import randomDots from "../charts/randomDots";
+import createScatterPlot from "../charts/scatterPlot";
 import createSinWave from "../charts/sinWave";
 
 export const charts: Record<string, () => void> = {
@@ -11,7 +12,8 @@ export const charts: Record<string, () => void> = {
     dots: createDotPlot,
     line: createLineChart,
     art: createArtChart,
-    sin: createSinWave
+    sin: createSinWave,
+    scatter: createScatterPlot,
 };
 
 function setChart(event: HashChangeEvent) {
@@ -28,7 +30,7 @@ function setChart(event: HashChangeEvent) {
     if (charts[hash]) {
         charts[hash]();
     } else {
-       charts['default']();
+        charts["default"]();
     }
 }
 
