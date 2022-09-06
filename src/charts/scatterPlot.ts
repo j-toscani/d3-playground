@@ -1,12 +1,4 @@
-import {
-    axisBottom,
-    axisLeft,
-    csv,
-    max,
-    min,
-    scaleLinear,
-    select,
-} from "d3";
+import { axisBottom, axisLeft, csv, max, min, scaleLinear, select } from "d3";
 
 const margin = { top: 20, right: 30, bottom: 30, left: 30 };
 const width = 1200;
@@ -17,7 +9,8 @@ export default async function createScatterPlot() {
     const svg = select("main")
         .append("svg")
         .attr("width", width)
-        .attr("height", height).attr('style', 'border: none');
+        .attr("height", height)
+        .attr("style", "border: none");
     const scaledData = getScales(data);
     svg.append("g")
         .attr("transform", `translate(${margin.left},0)`)
@@ -34,11 +27,13 @@ function getScaleX(data: any[]) {
         .domain([min(data, getX), max(data, getX)])
         .range([margin.left, width - margin.right]);
 }
+
 function getScaleY(data: any[]) {
     return scaleLinear()
         .domain([min(data, getY), max(data, getY)])
         .range([height - margin.bottom, margin.top]);
 }
+
 function getScales(data: any[]) {
     const scaleX = getScaleX(data);
     const scaleY = getScaleY(data);
