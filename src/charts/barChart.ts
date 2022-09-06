@@ -1,6 +1,6 @@
 import { select, selectAll } from "d3";
 import createButtonContainer from "../utils/createButtonContainer";
-import addAxis from "./addAxis";
+import addAxis from "../utils/addAxis";
 
 let data: number[] = [];
 
