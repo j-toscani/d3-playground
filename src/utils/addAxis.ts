@@ -5,7 +5,9 @@ type Mark = {
     y: number;
 };
 
-const defaultWidth = 1200; // SVG size
+type Domain = [number, number];
+
+const defaultWidth = 1200;
 const defaultHeight = 800;
 
 const defaultMargin = {
@@ -13,10 +15,10 @@ const defaultMargin = {
     top: 20,
     right: 30,
     left: 30,
-}; // setup for margin convention
+}; 
 
-export default function addAxis(
-    data: Mark[],
+export default function addAxisFactory(
+    svg: any,
     dimensions: {
         width?: number;
         height?: number;
@@ -28,32 +30,34 @@ export default function addAxis(
         height = defaultHeight,
         margin = defaultMargin,
     } = dimensions;
+    return (xDomain: Domain, yDomain: Domain) => {
+        const scaleX = createScale(xDomain, [
+            margin.left,
+            width - margin.right,
+        ]);
 
-    // we assume main is the container for the SVG;
-    const svg = select("svg");
+        const scaleY = createScale(yDomain, [
+            height - margin.top,
+            margin.bottom,
+        ]);
 
-    const scaleX = scaleLinear()
-        .domain([min(data, getX) ?? 0, max(data, getX) ?? 0])
-        .range([margin.left, width - margin.right]);
+        createAxis(svg, scaleY, [margin.left, 0]);
+        createAxis(svg, scaleX, [0, height - margin.bottom]);
 
-    // height has to be swapped because `y === 0` is at the top of the SVG
-    const scaleY = scaleLinear()
-        .domain([min(data, getY) ?? 0, max(data, getY) ?? 0])
-        .range([height - margin.top, margin.bottom]);
-
-    const axisY = svg
-        .append("g")
-        .attr("transform", `translate(${margin.left},0)`)
-        .call(axisLeft(scaleY));
-    const axisX = svg
-        .append("g")
-        .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(axisBottom(scaleX));
-}
-function getY(data: Mark) {
-    return data.y;
+        return {
+            scaleX,
+            scaleY
+        }
+    };
 }
 
-function getX(data: Mark) {
-    return data.x;
+function createAxis(svg: any, scale: any, translate: [number, number]) {
+    const axisToAdd = translate[0] < translate[1] ? axisBottom : axisLeft;
+    svg.append("g")
+        .attr("transform", `translate(${translate[0]}, ${translate[1]})`)
+        .call(axisToAdd(scale));
+}
+
+function createScale(domain: [number, number], range: [number, number]) {
+    return scaleLinear().domain(domain).range(range);
 }
