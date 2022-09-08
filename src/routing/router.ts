@@ -5,6 +5,7 @@ import createLineChart from "../charts/lineChart";
 import randomDots from "../charts/randomDots";
 import createScatterPlot from "../charts/scatterPlot";
 import createSinWave from "../charts/sinWave";
+import sunRun from "../charts/sunRun";
 
 export const charts: Record<string, () => void> = {
     default: randomDots,
@@ -14,6 +15,7 @@ export const charts: Record<string, () => void> = {
     art: createArtChart,
     sin: createSinWave,
     scatter: createScatterPlot,
+    sun: sunRun,
 };
 
 function setChart(event: HashChangeEvent) {
