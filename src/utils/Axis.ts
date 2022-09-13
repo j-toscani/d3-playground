@@ -19,11 +19,9 @@ export enum AxisPosition {
 }
 
 export default class Axis {
-    type: AxisType;
     position: AxisPosition;
 
-    constructor(position: AxisPosition, type = AxisType.LINEAR) {
-        this.type = type;
+    constructor(position: AxisPosition) {
         this.position = position;
     }
 
@@ -32,11 +30,11 @@ export default class Axis {
         scale: ScaleContinuousNumeric<any, any>
     ) {
         const className = `axis-${this.position}`;
-        let g = selection.select<SVGGElement>(`.${className}`);
-       
-        if (g.empty()) {
-            g = selection.append("g").attr("class", className);
-        }
+        const g = selection
+            .selectAll<SVGGElement, unknown>(`${className}`)
+            .data([null])
+            .join("g")
+            .attr("class", className);
 
         switch (this.position) {
             case AxisPosition.TOP:
