@@ -1,11 +1,11 @@
-import createArtChart from "../charts/artChart";
-import barChart from "../charts/barChart";
-import createDotPlot from "../charts/dotPlot";
-import createLineChart from "../charts/lineChart";
-import randomDots from "../charts/randomDots";
-import createScatterPlot from "../charts/scatterPlot";
-import createSinWave from "../charts/sinWave";
-import sunRun from "../charts/sunRun";
+import createArtChart from "../builders/artChart";
+import barChart from "../builders/barChart";
+import createDotPlot from "../builders/dotPlot";
+import createLineChart from "../builders/lineChart";
+import randomDots from "../builders/randomDots";
+import buildScatterPlot from "../builders/buildScatterPlot";
+import createSinWave from "../builders/sinWave";
+import sunRun from "../builders/sunRun";
 
 export const charts: Record<string, () => void> = {
     default: randomDots,
@@ -14,7 +14,7 @@ export const charts: Record<string, () => void> = {
     line: createLineChart,
     art: createArtChart,
     sin: createSinWave,
-    scatter: createScatterPlot,
+    scatter: buildScatterPlot,
     sun: sunRun,
 };
 
