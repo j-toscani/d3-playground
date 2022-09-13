@@ -1,83 +1,134 @@
-import { axisBottom, axisLeft, csv, max, min, scaleLinear, select } from "d3";
+import { max, ScaleContinuousNumeric, scaleLinear, scaleSqrt, Selection } from "d3";
+import Axis, { AxisPosition } from "../utils/Axis";
 
-const margin = { top: 20, right: 30, bottom: 30, left: 30 };
-const width = 1200;
-const height = 800;
-
-export default async function createScatterPlot() {
-    const data = await getRemoteData();
-    const svg = select("main")
-        .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("style", "border: none");
-    const scaledData = getScales(data);
-    svg.append("g")
-        .attr("transform", `translate(${margin.left},0)`)
-        .call(axisLeft(getScaleY(data)));
-    svg.append("g")
-        .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(axisBottom(getScaleX(data)));
-
-    renderPlot(svg, scaledData);
+interface ScatterplotMark {
+    x: number;
+    y: number;
+    r: number;
 }
 
-function getScaleX(data: any[]) {
-    return scaleLinear()
-        .domain([min(data, getX), max(data, getX)])
-        .range([margin.left, width - margin.right]);
+interface ChartMargin {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
 }
 
-function getScaleY(data: any[]) {
-    return scaleLinear()
-        .domain([min(data, getY), max(data, getY)])
-        .range([height - margin.bottom, margin.top]);
+interface ScatterplotConfig<T> {
+    width: number;
+    height: number;
+    margin: ChartMargin;
+
+    getters: {
+        x: (d: T) => ScatterplotMark["x"];
+        y: (d: T) => ScatterplotMark["y"];
+        r: (d: T) => ScatterplotMark["r"];
+    };
 }
 
-function getScales(data: any[]) {
-    const scaleX = getScaleX(data);
-    const scaleY = getScaleY(data);
-    return data.map((datum) => ({
-        x: scaleX(getX(datum)),
-        y: scaleY(getY(datum)),
-        scaleX,
-        scaleY,
-    }));
-}
+export default class Scatterplot<T> {
+    config: ScatterplotConfig<T>;
+    domain: Record<keyof ScatterplotMark, [number, number]>;
+    range: Record<keyof ScatterplotMark, [number, number]>;
+    data: T[];
+    selection: null | Selection<SVGSVGElement, any, any, any> = null;
 
-function renderPlot(svg: any, data: any[]) {
-    svg.selectAll("circle")
-        .data(data)
-        .join("circle")
-        .attr("cy", (d: any) => d.y)
-        .attr("cx", (d: any) => d.x)
-        .attr("r", 5)
-        .attr("fill", "black");
-}
+    constructor(data: T[], config: ScatterplotConfig<T>) {
+        this.data = data;
+        this.config = config;
 
-function getY(data: any) {
-    return data.sepal_length;
-}
+        this.domain = {
+            x: [0, max(this.data, this.getters.x)!],
+            y: [0, max(this.data, this.getters.y)!],
+            r: [0, (this.config.height / 100) * 2],
+        };
 
-function getX(data: any) {
-    return data.petal_length;
-}
+        this.range = {
+            x: [this.margin.left, this.config.width - this.margin.right],
+            y: [this.config.height - this.margin.top, this.margin.bottom],
+            r: [1, (this.config.height / 100) * 2],
+        };
+    }
 
-async function getRemoteData() {
-    const url =
-        "https://gist.githubusercontent.com/netj/8836201/raw/6f9306ad21398ea43cba4f7d537619d0e07d5ae3/iris.csv";
-    const rawData = await csv(url);
-    const heads = rawData.columns.slice();
+    get getters() {
+        return this.config.getters;
+    }
 
-    const rows = rawData.map((row) => {
-        const newRow: { [key: string]: number | string } = {};
-        heads.forEach((key) => {
-            if (key in row && key !== "variety") {
-                newRow[key.split(".").join("_")] = parseFloat(row[key]!);
-            }
-        });
-        return newRow;
-    });
+    get margin() {
+        return this.config.margin;
+    }
 
-    return rows;
+    createScales() : Record<keyof ScatterplotMark, ScaleContinuousNumeric<any, any, never>> {
+        return {
+            x: scaleLinear().domain(this.domain.x).range(this.range.x),
+            y: scaleLinear().domain(this.domain.y).range(this.range.y),
+            r: scaleSqrt().domain(this.domain.r).range(this.range.r),
+        };
+    }
+
+    createMarks(data: T[]): ScatterplotMark[] {
+        const scales = this.createScales();
+        return data.map((d: T) => ({
+            x: scales.x(this.getters.x(d)),
+            y: scales.y(this.getters.y(d)),
+            r: scales.r(this.getters.r(d)),
+        }));
+    }
+
+    render = (selection: Selection<SVGSVGElement, any, any, any>) => {
+        if (!this.selection) {
+            this.selection = selection;
+        }
+        return this._render();
+    };
+
+    updateData(data: T[]) {
+        this.data = data;
+        this._render();
+    }
+
+    _render() {
+        if (!this.selection) {
+            console.warn("No selection available. Data will not be rendered");
+            return;
+        }
+        this._applyMargin(this.selection);
+        this._renderAxis(this.selection);
+        this._renderMarks(this.selection);
+
+        return this.selection;
+    }
+
+    _applyMargin(selection: Selection<SVGSVGElement, any, any, any>) {
+        const { width, height } = this.config;
+        selection.attr("width", width).attr("height", height);
+    }
+
+    _renderMarks(selection: Selection<SVGSVGElement, any, any, any>) {
+        selection
+            .append("g")
+            .selectAll("circle")
+            .data(this.createMarks(this.data))
+            .join("circle")
+            .attr("cy", (d) => d.y)
+            .attr("cx", (d) => d.x)
+            .attr("r", (d) => d.r);
+    }
+
+    _renderAxis(selection: Selection<SVGSVGElement, any, any, any>) {
+        const yAxis = new Axis(AxisPosition.LEFT);
+        const xAxis = new Axis(AxisPosition.BOTTOM);
+        const { x, y } = this.createScales();
+
+        yAxis
+            .addToChart(selection, y)
+            .attr("transform", `translate(${this.margin.left}, 0)`);
+
+        xAxis
+            .addToChart(selection, x)
+            .attr(
+                "transform",
+                `translate(0, ${this.config.height - this.margin.bottom})`
+            );
+    }
 }
